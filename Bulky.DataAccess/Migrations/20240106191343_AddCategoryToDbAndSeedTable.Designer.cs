@@ -19,7 +19,7 @@ namespace BulkyBook.DataAccess.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.0-preview.7.23375.4")
+                .HasAnnotation("CategoryVersion", "8.0.0-preview.7.23375.4")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);

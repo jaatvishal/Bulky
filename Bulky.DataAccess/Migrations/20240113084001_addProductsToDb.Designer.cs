@@ -3,6 +3,7 @@ using BulkyBook.DataAccess.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BulkyBook.DataAccess.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240113084001_addProductsToDb")]
+    partial class addProductsToDb
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -62,7 +65,7 @@ namespace BulkyBook.DataAccess.Migrations
                         });
                 });
 
-            modelBuilder.Entity("BulkyBook.Models.Category", b =>
+            modelBuilder.Entity("BulkyBook.Models.Product", b =>
                 {
                     b.Property<int>("id")
                         .ValueGeneratedOnAdd()
@@ -100,7 +103,7 @@ namespace BulkyBook.DataAccess.Migrations
 
                     b.HasKey("id");
 
-                    b.ToTable("Categorys");
+                    b.ToTable("Products");
 
                     b.HasData(
                         new
