@@ -1,13 +1,13 @@
 ﻿
-@model List<Category>
+@model List<Product>
 
     <partial name="_notification" />
 
-<div class="card shadow border-0 mt-4">
+<div class="card shadow border-0 my-4">
     <div class="card-header bg-body-secondary bg-gradient ml-0 py-3" style="background-color:green;">
         <div class="row">
             <div class="col-12 text-center">
-                <h2 class="text-white py-2">Category List</h2>
+                <h2 class="text-white py-2">Product List</h2>
             </div>
         </div>
     </div>
@@ -19,8 +19,8 @@
                         
                     </div>
                     <div class="col-6 text-end">
-                        <a asp-controller="Category" asp-action="Create" class="btn btn-primary">
-                            <i class="bi bi-plus-circle"></i> CREATE NEW Category
+                        <a asp-controller="Product" asp-action="Create" class="btn btn-primary">
+                            <i class="bi bi-plus-circle"></i> CREATE NEW Product
                         </a>
                     </div>
                 </div>
@@ -29,22 +29,27 @@
 
         <table class="table table-bordered table-striped">
             <thead>
-            <th>Category Name</th>
-            <th>Display Order</th>
-            <th>Edit</th>
+            <th>Title</th>
+            <th>ISBN</th>
+            <th>Price</th>
+            <th>Author</th>
+            <th>Category</th>
             </thead>
             <tbody>
-                @foreach (var obj in Model.OrderBy(x => x.DisplayOrder))
+                @foreach (var obj in Model)
                 {
                     <tr>
-                        <td>@obj.Name</td>
-                        <th>@obj.DisplayOrder</th>
+                        <td>@obj.Title</td>
+                        <th>@obj.ISBN</th>
+                        <th>@obj.Price</th>
+                        <th>@obj.Author</th>
+                        <th></th>
                         <th>
                             <div class="w-75 btn-group" role="group">
-                                <a asp-controller="Category" asp-action="Edit" asp-route-id="@obj.id" class="btn btn-primary mx-2">
+                                <a asp-controller="Product" asp-action="Edit" asp-route-id="@obj.id" class="btn btn-primary mx-2">
                                     <i class="w-75 btn-group" role="group"></i>Edit
                                 </a>
-                                <a asp-controller="Category" asp-action="Delete" asp-route-id="@obj.id" class="btn btn-danger mx-2">
+                                <a asp-controller="Product" asp-action="Delete" asp-route-id="@obj.id" class="btn btn-danger mx-2">
                                     <i class="bi bi-trash-fill"></i>Delete
                                 </a>
                             </div>

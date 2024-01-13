@@ -6,16 +6,16 @@ using Microsoft.AspNetCore.Mvc;
 namespace BulkyBookWeb.Areas.Admin.Controllers
 {
     [Area("Admin")]
-    public class CategoryController : Controller
+    public class ProductController : Controller
     {
         private readonly IUnitOfWork _unitOfWork;
-        public CategoryController(IUnitOfWork unitOfWork)
+        public ProductController(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
         }
         public IActionResult Index()
         {
-            List<Category> objCategoryList = _unitOfWork.Category.GetAll().ToList();
+            List<Product> objCategoryList = _unitOfWork.Product.GetAll().ToList();
             return View(objCategoryList);
         }
         public IActionResult Edit(int? id)
@@ -24,7 +24,7 @@ namespace BulkyBookWeb.Areas.Admin.Controllers
             {
                 return NotFound();
             }
-            Category? CategoryFromDb = _unitOfWork.Category.Get(u => u.id == id);
+            Product? CategoryFromDb = _unitOfWork.Product.Get(u => u.id == id);
 
             if (CategoryFromDb == null)
             {
@@ -37,17 +37,12 @@ namespace BulkyBookWeb.Areas.Admin.Controllers
             return View();
         }
         [HttpPost]
-        public IActionResult Create(Category obj)
+        public IActionResult Create(Product obj)
         {
-            if (obj.Name == obj.DisplayOrder.ToString())
-            {
-                ModelState.AddModelError("name", "The DisplayOrder cannot excactly match the name.");
-            }
-
-
+           
             if (ModelState.IsValid)
             {
-                _unitOfWork.Category.Add(obj);
+               // _unitOfWork.Category.Add(obj);
                 _unitOfWork.Save();
                 TempData["success"] = "Category created sucessfully";
                 return RedirectToAction("Index");
@@ -59,11 +54,11 @@ namespace BulkyBookWeb.Areas.Admin.Controllers
 
         }
         [HttpPost]
-        public IActionResult Edit(Category obj)
+        public IActionResult Edit(Product obj)
         {
             if (ModelState.IsValid)
             {
-                _unitOfWork.Category.Update(obj);
+               // _unitOfWork.Category.Update(obj);
                 _unitOfWork.Save();
                 TempData["sucess"] = "Category edit succesfully";
                 return RedirectToAction("Index");
@@ -77,7 +72,7 @@ namespace BulkyBookWeb.Areas.Admin.Controllers
             {
                 return NotFound();
             }
-            Category? CategoryFromDb = _unitOfWork.Category.Get(u => u.id == id);
+            Product? CategoryFromDb = _unitOfWork.Product.Get(u => u.id == id);
 
             if (CategoryFromDb == null)
             {
@@ -88,7 +83,7 @@ namespace BulkyBookWeb.Areas.Admin.Controllers
         [HttpPost, ActionName("Delete")]
         public IActionResult DeletePOST(int? id)
         {
-            Category obj = _unitOfWork.Category.Get(u => u.id == id);
+            Product obj = _unitOfWork.Product.Get(u => u.id == id);
 
 
             if (obj == null)
@@ -96,7 +91,7 @@ namespace BulkyBookWeb.Areas.Admin.Controllers
                 return NotFound();
             }
 
-            _unitOfWork.Category.Remove(obj);
+           // _unitOfWork.Category.Remove(obj);
             _unitOfWork.Save();
             TempData["sucess"] = "Category Deleted succesfully";
             return RedirectToAction("Index");
