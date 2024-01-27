@@ -2,6 +2,8 @@
 using BulkyBook.DataAccess.Repository.IRepository;
 using BulkyBook.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using System.Collections.Generic;
 
 namespace BulkyBookWeb.Areas.Admin.Controllers
 {
@@ -16,6 +18,12 @@ namespace BulkyBookWeb.Areas.Admin.Controllers
         public IActionResult Index()
         {
             List<Product> objCategoryList = _unitOfWork.Product.GetAll().ToList();
+            IEnumerable<SelectListItem> CategoryList=_unitOfWork.Category.GetAll().Select(u=> 
+            new SelectListItem
+            {
+                Text = u.Name,
+                Value=  u.id.ToString(),
+            });
             return View(objCategoryList);
         }
         public IActionResult Edit(int? id)
