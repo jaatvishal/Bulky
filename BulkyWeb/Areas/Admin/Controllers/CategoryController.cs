@@ -37,6 +37,7 @@ namespace BulkyBookWeb.Areas.Admin.Controllers
             return View();
         }
         [HttpPost]
+        [Route("Admin/Category/Create")]
         public IActionResult Create(Category obj)
         {
             if (obj.Name == obj.DisplayOrder.ToString())

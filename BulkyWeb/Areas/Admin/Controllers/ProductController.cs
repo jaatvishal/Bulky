@@ -1,110 +1,197 @@
-﻿using BulkyBook.DataAccess.Data;
-using BulkyBook.DataAccess.Repository.IRepository;
+﻿using BulkyBook.DataAccess.Repository.IRepository;
+//using BulkyBook.DataAcess.Data;
 using BulkyBook.Models;
+using BulkyBook.Models.ViewModels;
+using BulkyBook.Utility;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Collections.Generic;
+using System.Data;
 
 namespace BulkyBookWeb.Areas.Admin.Controllers
 {
     [Area("Admin")]
+    //[Authorize(Roles = SD.Role_Admin)]
     public class ProductController : Controller
     {
         private readonly IUnitOfWork _unitOfWork;
-        public ProductController(IUnitOfWork unitOfWork)
+        private readonly IWebHostEnvironment _webHostEnvironment;
+        public ProductController(IUnitOfWork unitOfWork, IWebHostEnvironment webHostEnvironment)
         {
             _unitOfWork = unitOfWork;
+            _webHostEnvironment = webHostEnvironment;
         }
         public IActionResult Index()
         {
-            List<Product> objCategoryList = _unitOfWork.Product.GetAll().ToList();
-            IEnumerable<SelectListItem> CategoryList=_unitOfWork.Category.GetAll().Select(u=> 
-            new SelectListItem
-            {
-                Text = u.Name,
-                Value=  u.id.ToString(),
-            });
-            return View(objCategoryList);
+            List<Product> objProductList = _unitOfWork.Product.GetAll(/*includeProperties: "Category"*/).ToList();
+
+            return View(objProductList);
         }
-        public IActionResult Edit(int? id)
+
+        public IActionResult Upsert(int? id)
         {
-            if (id == null && id == 0)
+            ProductVM productVM = new()
             {
-                return NotFound();
-            }
-            Product? CategoryFromDb = _unitOfWork.Product.Get(u => u.id == id);
-
-            if (CategoryFromDb == null)
+                CategoryList = _unitOfWork.Category.GetAll().Select(u => new SelectListItem
+                {
+                    Text = u.Name,
+                    Value = u.id.ToString()
+                }),
+                Product = new Product()
+            };
+            if (id == null || id == 0)
             {
-                return NotFound();
+                //create
+                return View(productVM);
             }
-            return View(CategoryFromDb);
-        }
-        public IActionResult Create()
-        {
-            return View();
-        }
-        [HttpPost]
-        public IActionResult Create(Product obj)
-        {
-           
-            if (ModelState.IsValid)
+            else
             {
-               // _unitOfWork.Category.Add(obj);
-                _unitOfWork.Save();
-                TempData["success"] = "Category created sucessfully";
-                return RedirectToAction("Index");
-
+                //update
+                productVM.Product = _unitOfWork.Product.Get(u => u.id == id/*, includeProperties: "ProductImages"*/);
+                return View(productVM);
             }
-
-
-            return View();
 
         }
         [HttpPost]
-        public IActionResult Edit(Product obj)
+        public IActionResult Upsert(ProductVM productVM, List<IFormFile> files)
         {
             if (ModelState.IsValid)
             {
-               // _unitOfWork.Category.Update(obj);
+                if (productVM.Product.id == 0)
+                {
+                    _unitOfWork.Product.Add(productVM.Product);
+                }
+                else
+                {
+                    _unitOfWork.Product.Update(productVM.Product);
+                }
+
                 _unitOfWork.Save();
-                TempData["sucess"] = "Category edit succesfully";
+
+
+                string wwwRootPath = _webHostEnvironment.WebRootPath;
+                if (files != null)
+                {
+
+                    foreach (IFormFile file in files)
+                    {
+                        string fileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
+                        string productPath = @"images\products\product-" + productVM.Product.id;
+                        string finalPath = Path.Combine(wwwRootPath, productPath);
+
+                        if (!Directory.Exists(finalPath))
+                            Directory.CreateDirectory(finalPath);
+
+                        using (var fileStream = new FileStream(Path.Combine(finalPath, fileName), FileMode.Create))
+                        {
+                            file.CopyTo(fileStream);
+                        }
+
+                        //productImage productImage = new()
+                        //{
+                        //    ImageUrl = @"\" + productPath + @"\" + fileName,
+                        //    ProductId = productVM.Product.id,
+                        //};
+
+                        //if (productVM.Product.ImageUrl == null)
+                        //    productVM.Product.ImageUrl = new List<productImage>();
+
+                        //productVM.Product.ImageUrl.Add(productImage);
+
+                    }
+
+                    _unitOfWork.Product.Update(productVM.Product);
+                    _unitOfWork.Save();
+
+
+
+
+                }
+
+
+                TempData["success"] = "Product created/updated successfully";
                 return RedirectToAction("Index");
             }
-            return View(obj);
+            else
+            {
+                productVM.CategoryList = _unitOfWork.Category.GetAll().Select(u => new SelectListItem
+                {
+                    Text = u.Name,
+                    Value = u.id.ToString()
+                });
+                return View(productVM);
+            }
         }
 
-        public IActionResult Delete(int? id)
-        {
-            if (id == null && id == 0)
-            {
-                return NotFound();
-            }
-            Product? CategoryFromDb = _unitOfWork.Product.Get(u => u.id == id);
+        //public IActionResult DeleteImage(int imageId)
+        //{
+        //   // var imageToBeDeleted = _unitOfWork.ProductImage.Get(u => u.Id == imageId);
+        //    int productId = imageToBeDeleted.ProductId;
+        //    if (imageToBeDeleted != null)
+        //    {
+        //        if (!string.IsNullOrEmpty(imageToBeDeleted.ImageUrl))
+        //        {
+        //            var oldImagePath =
+        //                           Path.Combine(_webHostEnvironment.WebRootPath,
+        //                           imageToBeDeleted.ImageUrl.TrimStart('\\'));
 
-            if (CategoryFromDb == null)
-            {
-                return NotFound();
-            }
-            return View(CategoryFromDb);
-        }
-        [HttpPost, ActionName("Delete")]
-        public IActionResult DeletePOST(int? id)
-        {
-            Product obj = _unitOfWork.Product.Get(u => u.id == id);
+        //            if (System.IO.File.Exists(oldImagePath))
+        //            {
+        //                System.IO.File.Delete(oldImagePath);
+        //            }
+        //        }
+
+        //        _unitOfWork.ProductImage.Remove(imageToBeDeleted);
+        //        _unitOfWork.Save();
+
+        //        TempData["success"] = "Deleted successfully";
+        //    }
+
+        //    return RedirectToAction(nameof(Upsert), new { id = productId });
+        //}
+
+        #region API CALLS
+
+        //[HttpGet]
+        //public IActionResult GetAll()
+        //{
+        //    List<Product> objProductList = _unitOfWork.Product.GetAll(includeProperties: "Category").ToList();
+        //    return Json(new { data = objProductList });
+        //}
 
 
-            if (obj == null)
-            {
-                return NotFound();
-            }
+        //[HttpDelete]
+        //public IActionResult Delete(int? id)
+        //{
+        //    var productToBeDeleted = _unitOfWork.Product.Get(u => u.Id == id);
+        //    if (productToBeDeleted == null)
+        //    {
+        //        return Json(new { success = false, message = "Error while deleting" });
+        //    }
 
-           // _unitOfWork.Category.Remove(obj);
-            _unitOfWork.Save();
-            TempData["sucess"] = "Category Deleted succesfully";
-            return RedirectToAction("Index");
+        //    string productPath = @"images\products\product-" + id;
+        //    string finalPath = Path.Combine(_webHostEnvironment.WebRootPath, productPath);
+
+        //    if (Directory.Exists(finalPath))
+        //    {
+        //        string[] filePaths = Directory.GetFiles(finalPath);
+        //        foreach (string filePath in filePaths)
+        //        {
+        //            System.IO.File.Delete(filePath);
+        //        }
+
+        //        Directory.Delete(finalPath);
+        //    }
 
 
-        }
+        //    _unitOfWork.Product.Remove(productToBeDeleted);
+        //    _unitOfWork.Save();
+
+        //    return Json(new { success = true, message = "Delete Successful" });
+        //}
+
+        #endregion
+
     }
 }
