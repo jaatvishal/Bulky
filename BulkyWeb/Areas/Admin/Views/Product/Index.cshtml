@@ -27,7 +27,7 @@
             </div>
         </div>
 
-        <table class="table table-bordered table-striped">
+        <table class="table table-bordered table-striped" id="myTable">
             <thead>
             <th>Title</th>
             <th>ISBN</th>
@@ -35,8 +35,8 @@
             <th>Author</th>
             <th>Category</th>
             </thead>
-            <tbody>
-                @foreach (var obj in Model)
+            
+                @* @foreach (var obj in Model)
                 {
                     <tr>
                         <td>@obj.Title</td>
@@ -57,9 +57,12 @@
                         </th>
                     </tr>
 
-                }
-            </tbody>
+                } *@
+            
         </table>
     </div>
 </div>
 
+@section Scripts{
+    <script src="~/js/product.js"></script>
+}
