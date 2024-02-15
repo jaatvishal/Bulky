@@ -186,12 +186,12 @@ namespace BulkyBookWeb.Areas.Admin.Controllers
 
         #region API CALLS
 
-        //[HttpGet]
-        //public IActionResult GetAll()
-        //{
-        //    List<Product> objProductList = _unitOfWork.Product.GetAll(includeProperties: "Category").ToList();
-        //    return Json(new { data = objProductList });
-        //}
+        [HttpGet]
+        public IActionResult GetAll()
+        {
+            List<Product> objProductList = _unitOfWork.Product.GetAll(includeProperties: "Category").ToList();
+            return Json(new { data = objProductList });
+        }
 
 
         //[HttpDelete]
