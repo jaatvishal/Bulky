@@ -187,42 +187,42 @@ namespace BulkyBookWeb.Areas.Admin.Controllers
         #region API CALLS
 
         [HttpGet]
-        public IActionResult GetAll()
+        public IActionResult GetAll ()
         {
             List<Product> objProductList = _unitOfWork.Product.GetAll(includeProperties: "Category").ToList();
             return Json(new { data = objProductList });
         }
 
 
-        //[HttpDelete]
-        //public IActionResult Delete(int? id)
-        //{
-        //    var productToBeDeleted = _unitOfWork.Product.Get(u => u.Id == id);
-        //    if (productToBeDeleted == null)
-        //    {
-        //        return Json(new { success = false, message = "Error while deleting" });
-        //    }
+        [HttpDelete]
+        public IActionResult Delete(int? id)
+        {
+            var productToBeDeleted = _unitOfWork.Product.Get(u => u.id == id);
+            if (productToBeDeleted == null)
+            {
+                return Json(new { success = false, message = "Error while deleting" });
+            }
 
-        //    string productPath = @"images\products\product-" + id;
-        //    string finalPath = Path.Combine(_webHostEnvironment.WebRootPath, productPath);
+            string productPath = @"images\products\product-" + id;
+            string finalPath = Path.Combine(_webHostEnvironment.WebRootPath, productPath);
 
-        //    if (Directory.Exists(finalPath))
-        //    {
-        //        string[] filePaths = Directory.GetFiles(finalPath);
-        //        foreach (string filePath in filePaths)
-        //        {
-        //            System.IO.File.Delete(filePath);
-        //        }
+            if (Directory.Exists(finalPath))
+            {
+                string[] filePaths = Directory.GetFiles(finalPath);
+                foreach (string filePath in filePaths)
+                {
+                    System.IO.File.Delete(filePath);
+                }
 
-        //        Directory.Delete(finalPath);
-        //    }
+                Directory.Delete(finalPath);
+            }
 
 
-        //    _unitOfWork.Product.Remove(productToBeDeleted);
-        //    _unitOfWork.Save();
+            _unitOfWork.Product.Remove(productToBeDeleted);
+            _unitOfWork.Save();
 
-        //    return Json(new { success = true, message = "Delete Successful" });
-        //}
+            return Json(new { success = true, message = "Delete Successful" });
+        }
 
         #endregion
 
