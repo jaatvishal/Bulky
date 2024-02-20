@@ -12,7 +12,9 @@ namespace BulkyBook.DataAccess.Repository.IRepository
 
         IProductRepository Product { get; }
 
-         public void Save()
+        IProductImageRepository ProductImage { get; }
+
+        public void Save()
         {
             
         }

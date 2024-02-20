@@ -14,9 +14,12 @@ namespace BulkyBook.DataAccess.Repository
         public ICategoryRepository Category { get; private set; }
         
         public IProductRepository Product { get; private set; }
+
+        public IProductImageRepository ProductImage { get; private set; }
         public UnitOfWork(ApplicationDbContext db)
         {
             _db= db;
+            ProductImage = new ProductImageRepository(_db);
             Category = new CategoryRepository(_db);
             Product = new ProductRepository(_db);
         }

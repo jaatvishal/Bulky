@@ -46,5 +46,7 @@ namespace BulkyBook.Models
         [ValidateNever]
         public string? ImageUrl { get; set; }
 
+        [ValidateNever]
+        public List<ProductImage> ProductImages { get; set; }
     }
 }
