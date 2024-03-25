@@ -1,5 +1,6 @@
-﻿using BulkyBook.DataAccess.Repository.IRepository;
-// BulkyBook.DataAcess.Data;
+﻿
+using BulkyBook.DataAccess.Repository.IRepository;
+//using BulkyBook.DataAcess.Data;
 using BulkyBook.Models;
 using BulkyBook.Models.ViewModels;
 using BulkyBook.Utility;
@@ -12,7 +13,7 @@ using System.Data;
 namespace BulkyBookWeb.Areas.Admin.Controllers
 {
     [Area("Admin")]
-   // [Authorize(Roles = SD.Role_Admin)]
+    //[Authorize(Roles = SD.Role_Admin)]
     public class ProductController : Controller
     {
         private readonly IUnitOfWork _unitOfWork;
@@ -125,10 +126,10 @@ namespace BulkyBookWeb.Areas.Admin.Controllers
         }
 
 
-        public IActionResult DeleteImage(int imageid)
+        public IActionResult DeleteImage(int imageId)
         {
-            var imageToBeDeleted = _unitOfWork.ProductImage.Get(u => u.Id == imageid);
-            int productid = imageToBeDeleted.ProductId;
+            var imageToBeDeleted = _unitOfWork.ProductImage.Get(u => u.Id == imageId);
+            int productId = imageToBeDeleted.ProductId;
             if (imageToBeDeleted != null)
             {
                 if (!string.IsNullOrEmpty(imageToBeDeleted.ImageUrl))
@@ -149,7 +150,7 @@ namespace BulkyBookWeb.Areas.Admin.Controllers
                 TempData["success"] = "Deleted successfully";
             }
 
-            return RedirectToAction(nameof(Upsert), new { id = productid });
+            return RedirectToAction(nameof(Upsert), new { id = productId });
         }
 
         #region API CALLS
