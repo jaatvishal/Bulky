@@ -11,6 +11,6 @@ namespace BulkyBook.Models.ViewModels
         public IEnumerable<ShoppingCart> ShoppingCartList { get; set; }
         public OrderHeader OrderHeader { get; set; }
 
-        //public double OrderTotal { get; set; }
+        //public double OrderTotal { get; set; }    ff
     }
 }
