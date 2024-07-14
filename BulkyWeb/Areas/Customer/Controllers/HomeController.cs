@@ -1,5 +1,7 @@
+using BulkyBook.DataAccess.Repository;
 using BulkyBook.DataAccess.Repository.IRepository;
 using BulkyBook.Models;
+using BulkyBook.Utility;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
@@ -38,27 +40,38 @@ namespace BulkyBookWeb.Areas.Customer.Controllers
 
         [HttpPost]
         [Authorize]
-        public IActionResult Details(ShoppingCart shoopingcart)
+        public IActionResult Details(ShoppingCart shoppingCart)
         {
-            var claimIdentity = (ClaimsIdentity)User.Identity;
-            var userid = claimIdentity.FindFirst(ClaimTypes.NameIdentifier).Value;
-            shoopingcart.ApplicationUserId=userid;
+            var claimsIdentity = (ClaimsIdentity)User.Identity;
+            var userId = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier).Value;
+            shoppingCart.ApplicationUserId = userId;
 
-            ShoppingCart cartFromDb =_UnitOfWork.ShoppingCart.Get(u=>u.ApplicationUserId==userid && u.ProductId==shoopingcart.ProductId);
+            ShoppingCart cartFromDb = _UnitOfWork.ShoppingCart.Get(u => u.ApplicationUserId == userId &&
+            u.ProductId == shoppingCart.ProductId);
 
             if (cartFromDb != null)
             {
-                cartFromDb.Count += shoopingcart.Count;              
+                //shopping cart exists
+                cartFromDb.Count += shoppingCart.Count;
                 _UnitOfWork.ShoppingCart.Update(cartFromDb);
+                _UnitOfWork.Save();
             }
             else
             {
-                _UnitOfWork.ShoppingCart.Add(shoopingcart);
-            }           
+                //add cart record
+                _UnitOfWork.ShoppingCart.Add(shoppingCart);
+                _UnitOfWork.Save();
+                HttpContext.Session.SetInt32(SD.SessionCart,
+                _UnitOfWork.ShoppingCart.GetAll(u => u.ApplicationUserId == userId).Count());
+            }
+            TempData["success"] = "Cart updated successfully";
 
-            _UnitOfWork.Save();
+
+
+
             return RedirectToAction(nameof(Index));
         }
+
         public IActionResult Privacy()
         {
             return View();
